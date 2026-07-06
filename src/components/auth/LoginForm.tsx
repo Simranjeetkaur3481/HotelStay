@@ -1,6 +1,6 @@
 import { FaApple, FaFacebookF } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -8,6 +8,11 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { useLoginMutation } from "@/store/api/authApi";
+import { getDashboardPathForRole } from "@/constants/roles";
+import { useAppDispatch } from "@/store/hooks";
+import { setUser } from "@/store/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 const schema = z.object({
   emailOrUsername: z.string().trim().min(1, "Please enter your email or username"),
@@ -17,8 +22,10 @@ const schema = z.object({
 type LoginType = z.infer<typeof schema>;
 
 const LoginForm = () => {
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
-
+  const [login] = useLoginMutation();
+  const navigate = useNavigate();
   const {
     register,
     handleSubmit,
@@ -32,7 +39,19 @@ const LoginForm = () => {
     resolver: zodResolver(schema),
   });
 
-  const formSubmit = async (data: LoginType) => {};
+  const formSubmit = async (data: LoginType) => {
+    try {
+      const res = await login(data).unwrap();
+      console.log(res);
+      if (!res.success || !res.data) {
+        throw new Error(res?.message || "Invalid credentials");
+      }
+      dispatch(setUser(res?.data));
+      navigate(getDashboardPathForRole(res.data.role));
+    } catch (error: any) {
+      console.log(error?.data?.message || "something went wrong");
+    }
+  };
   return (
     <div className="space-y-3 sm:space-y-5">
       <div className="space-y-2 mb-5">
@@ -81,11 +100,7 @@ const LoginForm = () => {
 
           {errors.password && <p className="text-sm text-destructive">{errors.password.message}</p>}
         </div>
-        <Button
-          type="submit"
-          disabled={isSubmitting}
-          className="h-11 w-full "
-        >
+        <Button type="submit" disabled={isSubmitting} className="h-11 w-full ">
           {isSubmitting ? "Logging in..." : "Login"}
         </Button>
 
@@ -114,7 +129,7 @@ const LoginForm = () => {
         </div>
         <p className="text-center">
           Don&apos;t have an account?{" "}
-          <Link to="/register" className="text-blue-500">
+          <Link to="/register" replace className="text-blue-500">
             Register
           </Link>
         </p>

@@ -1,9 +1,14 @@
-import React from 'react'
+import useAuth from "@/hooks/useAuth";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 const ProtectedRoutes = () => {
-  return (
-    <div>ProtectedRoutes</div>
-  )
-}
+  const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace state={{ from: location }} />;
+  }
 
-export default ProtectedRoutes
+  return <Outlet />
+};
+
+export default ProtectedRoutes;

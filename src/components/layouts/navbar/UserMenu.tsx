@@ -4,11 +4,7 @@ import { NavLink } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
 import {
   DropdownMenu,
@@ -18,30 +14,24 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-
-// Replace this with Redux later
-const user = {
-  name: "Prince",
-  email: "prince@gmail.com",
-  role: "customer",
-  avatar: "",
-};
+import useAuth from "@/hooks/useAuth";
+import { useLogoutMutation } from "@/store/api/authApi";
+import { LogOut } from "lucide-react";
 
 export default function UserMenu() {
+  const [logOut] = useLogoutMutation();
+  const { user } = useAuth();
+  console.log("user", user);
   // Guest
-  if (user) {
+  if (!user) {
     return (
       <div className="hidden items-center gap-2 lg:flex">
         <Button variant="ghost" asChild>
-          <NavLink to="/login">
-            Login
-          </NavLink>
+          <NavLink to="/login">Login</NavLink>
         </Button>
 
         <Button asChild>
-          <NavLink to="/register">
-            Register
-          </NavLink>
+          <NavLink to="/register">Register</NavLink>
         </Button>
       </div>
     );
@@ -54,45 +44,32 @@ export default function UserMenu() {
           <Avatar className="cursor-pointer">
             <AvatarImage src={user?.avatar} />
 
-            <AvatarFallback>
-              {user?.name.charAt(0)}
-            </AvatarFallback>
+            <AvatarFallback>{user?.fullName?.charAt(0)}</AvatarFallback>
           </Avatar>
         </button>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent
-        align="end"
-        className="w-60"
-      >
+      <DropdownMenuContent align="end" className="w-60">
         <DropdownMenuLabel>
-          <p>{user?.name}</p>
+          <p>{user?.fullName}</p>
 
-          <p className="text-xs text-muted-foreground">
-            {user?.email}
-          </p>
+          <p className="text-xs text-muted-foreground">{user?.email}</p>
         </DropdownMenuLabel>
 
         <DropdownMenuSeparator />
 
         <DropdownMenuItem asChild>
-          <NavLink to="/profile">
-            Profile
-          </NavLink>
+          <NavLink to="/profile">Profile</NavLink>
         </DropdownMenuItem>
 
-        {user?.role === "customer" && (
+        {user?.role === "Customer" && (
           <>
             <DropdownMenuItem asChild>
-              <NavLink to="/my-bookings">
-                My Bookings
-              </NavLink>
+              <NavLink to="/my-bookings">My Bookings</NavLink>
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-              <NavLink to="/wishlist">
-                Wishlist
-              </NavLink>
+              <NavLink to="/wishlist">Wishlist</NavLink>
             </DropdownMenuItem>
           </>
         )}
@@ -100,31 +77,33 @@ export default function UserMenu() {
         {user?.role === "owner" && (
           <>
             <DropdownMenuItem asChild>
-              <NavLink to="/owner">
-                Dashboard
-              </NavLink>
+              <NavLink to="/owner">Dashboard</NavLink>
             </DropdownMenuItem>
 
             <DropdownMenuItem asChild>
-              <NavLink to="/owner/hotels">
-                My Hotels
-              </NavLink>
+              <NavLink to="/owner/hotels">My Hotels</NavLink>
             </DropdownMenuItem>
           </>
         )}
 
         {user?.role === "admin" && (
           <DropdownMenuItem asChild>
-            <NavLink to="/admin">
-              Dashboard
-            </NavLink>
+            <NavLink to="/admin">Dashboard</NavLink>
           </DropdownMenuItem>
         )}
 
         <DropdownMenuSeparator />
 
         <DropdownMenuItem>
-          Logout
+          <button
+            type="button"
+            // role="menuitem"
+            onClick={logOut}
+            className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm font-medium text-red-700 transition-colors hover:bg-red-50"
+          >
+            <LogOut className="h-4 w-4 shrink-0" />
+            Logout
+          </button>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

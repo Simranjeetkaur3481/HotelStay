@@ -165,7 +165,7 @@ const RegisterForm = () => {
 
           <p className="pb-4 text-center">
             Already have an account?{" "}
-            <Link to="/login" className="text-blue-500">
+            <Link to="/login" replace className="text-blue-500">
               Login
             </Link>
           </p>
