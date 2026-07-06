@@ -1,12 +1,7 @@
-
 import { Menu } from "lucide-react";
 import { NavLink } from "react-router-dom";
 
-import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 
 import { Button } from "@/components/ui/button";
 
@@ -26,7 +21,6 @@ export default function MobileNav() {
 
         <SheetContent side="left" className="w-72">
           <div className="space-y-8">
-
             <Logo />
 
             <nav>
@@ -38,9 +32,7 @@ export default function MobileNav() {
                       className={({ isActive }) =>
                         cn(
                           "block rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                          isActive
-                            ? "bg-primary text-primary-foreground"
-                            : "hover:bg-muted"
+                          isActive ? "bg-primary text-primary-foreground" : "hover:bg-muted",
                         )
                       }
                     >
@@ -50,7 +42,6 @@ export default function MobileNav() {
                 ))}
               </ul>
             </nav>
-
           </div>
         </SheetContent>
       </Sheet>

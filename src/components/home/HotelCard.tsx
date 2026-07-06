@@ -1,4 +1,4 @@
-import { Heart, MapPin, Star, Wifi, ChevronRight } from "lucide-react";
+import { Heart, MapPin, Star, ChevronRight } from "lucide-react";
 
 import { Card, CardContent } from "@/components/ui/card";
 import { API_BASE_URL } from "@/constants/api";
@@ -30,14 +30,14 @@ export default function HotelCard({
   isWishlisted,
 }: HotelCardProps) {
   return (
-    <Link to={`hotelDetails/${id}`}>
-      <Card className="group overflow-hidden rounded-2xl border-0 shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl pt-0 min-w-[20rem]">
+    <Link to={`/hotelDetails/${id}`}>
+      <Card className="group overflow-hidden rounded-2xl border-0 shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl pt-0 min-w-[18rem]">
         {/* Image */}
         <div className="relative overflow-hidden">
           <img
             src={`${API_BASE_URL}${images[0].imageUrl}`}
             alt={name}
-            className="h-40 w-full object-cover transition duration-500 group-hover:scale-110"
+            className="h-40 w-full object-cover transition duration-500 group-hover:scale-105"
           />
 
           <button className="absolute right-4 top-4 rounded-full bg-white/90 p-2 shadow">

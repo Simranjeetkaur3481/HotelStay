@@ -1,7 +1,7 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
 import AdminHome from "@/pages/admin/AdminHome";
 
-export const AdminRoutes = [
+export const adminRoutes = [
   {
     element: <DashboardLayout />,
     children: [

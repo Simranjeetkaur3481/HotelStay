@@ -17,11 +17,25 @@ import {
 import useAuth from "@/hooks/useAuth";
 import { useLogoutMutation } from "@/store/api/authApi";
 import { LogOut } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { logOut } from "@/store/slices/authSlice";
+
+type UserProps = {
+  avatar: string;
+  fullName: string;
+  email: string;
+  role: string;
+};
 
 export default function UserMenu() {
-  const [logOut] = useLogoutMutation();
+  const dispatch = useDispatch();
+  // const [logOut] = useLogoutMutation();
   const { user } = useAuth();
-  console.log("user", user);
+  // console.log("user", user);
+
+  const handleLogout = () => {
+    dispatch(logOut());
+  };
   // Guest
   if (!user) {
     return (
@@ -74,7 +88,7 @@ export default function UserMenu() {
           </>
         )}
 
-        {user?.role === "owner" && (
+        {user?.role === "HotelOwner" && (
           <>
             <DropdownMenuItem asChild>
               <NavLink to="/owner">Dashboard</NavLink>
@@ -86,7 +100,7 @@ export default function UserMenu() {
           </>
         )}
 
-        {user?.role === "admin" && (
+        {user?.role === "Admin" && (
           <DropdownMenuItem asChild>
             <NavLink to="/admin">Dashboard</NavLink>
           </DropdownMenuItem>
@@ -98,7 +112,7 @@ export default function UserMenu() {
           <button
             type="button"
             // role="menuitem"
-            onClick={logOut}
+            onClick={handleLogout}
             className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm font-medium text-red-700 transition-colors hover:bg-red-50"
           >
             <LogOut className="h-4 w-4 shrink-0" />

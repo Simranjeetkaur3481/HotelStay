@@ -1,16 +1,17 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
 import CustomerHome from "@/pages/customer/CustomerHome";
 import RoleRoute from "../guards/RoleRoute";
+import { Roles } from "@/constants/roles";
 
-export const CustomerRoutes = [
+export const customerRoutes = [
   {
-    element: <RoleRoute allowedRoles={["customer"]} />,
+    element: <RoleRoute allowedRoles={[Roles.Customer]} />,
     children: [
       {
         element: <DashboardLayout />,
         children: [
           {
-            paht: "/customer",
+            path: "/customer",
             element: <CustomerHome />,
           },
         ],

@@ -4,18 +4,14 @@ import { endPoint } from "./endPoints/endPoints";
 export const hotelApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getHotels: builder.query({
-      query: (args) => {
-        const { Search } = args || {};
+      query: (params) => {
         return {
           url: endPoint.hotels.getHotels,
           credentials: "include",
-          params: Search ? { Search } : {},
+          params,
         };
       },
-      providesTags: (result) =>
-        result?.data
-          ? [...result.data.map(({ id }: { id: number }) => ({ type: "hotels" as const, id })), "hotels"]
-          : ["hotels"],
+      providesTags: ["hotels"],
     }),
     // getHotels: builder.query({
     //   query: (args) => {
