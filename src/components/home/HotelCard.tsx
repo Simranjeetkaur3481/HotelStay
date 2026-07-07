@@ -3,6 +3,12 @@ import { Heart, MapPin, Star, Wifi, ChevronRight } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { API_BASE_URL } from "@/constants/api";
 import { Link } from "react-router-dom";
+import {
+  useAddToWishListMutation,
+  useRemoveWishListMutation,
+} from "@/store/api/wishListAPi";
+import { id } from "zod/v4/locales";
+import { useState } from "react";
 
 type HotelCardProps = {
   id: number;
@@ -27,8 +33,26 @@ export default function HotelCard({
   totalReviews,
   startingRoomPrice,
   images,
-  isWishlisted,
+  isWishlisted
 }: HotelCardProps) {
+
+const [addToWishList] = useAddToWishListMutation();
+const [removeWishList] = useRemoveWishListMutation();
+
+const handleWishlist=async()=>{
+  try {
+    if(isWishlisted){
+      await removeWishList(id).unwrap();
+      
+    }else{
+      await addToWishList({hotelId:id}).unwrap();
+     
+    }
+    
+  } catch (error) {
+    
+  }
+}
   return (
     <Link to={`hotelDetails/${id}`}>
       <Card className="group overflow-hidden rounded-2xl border-0 shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl pt-0 min-w-[20rem]">
@@ -40,8 +64,12 @@ export default function HotelCard({
             className="h-40 w-full object-cover transition duration-500 group-hover:scale-110"
           />
 
-          <button className="absolute right-4 top-4 rounded-full bg-white/90 p-2 shadow">
-            <Heart className={`size-5 ${isWishlisted ? "fill-red-700 text-red-700" : ""}`} />
+          <button 
+            onClick={handleWishlist}
+          className="absolute right-4 top-4 rounded-full bg-white/90 p-2 shadow">
+            <Heart className={`size-5 transition ${
+      isWishlisted ? "fill-red-500 text-red-500" : "text-gray-500"
+    }`} />
           </button>
 
           <div className="absolute left-4 top-4 rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground">

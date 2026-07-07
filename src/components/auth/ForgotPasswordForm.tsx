@@ -11,7 +11,6 @@ const schema = z.object({
 
 type FormValues = z.infer<typeof schema>;
 
-
 const ForgotPasswordForm = () => {
   const {
     register,
@@ -23,31 +22,30 @@ const ForgotPasswordForm = () => {
       email: "",
     },
   });
-  const navigate= useNavigate();
-const [forgotPassword] = useForgotPasswordMutation();
- const onSubmit = async (data: FormValues) => {
-  try {
-    const res = await forgotPassword(data).unwrap();
-    console.log(res);
-    alert("Password reset link sent successfully on your e-mail.");
-    
-    navigate("/verify-otp", {
-  state: {
-    email: data.email,
-  },
-});
-  } catch (error) {
-    console.log(error);
-    alert("Something went wrong");
-  }
-};
- 
+  const navigate = useNavigate();
+  const [forgotPassword] = useForgotPasswordMutation();
+  const onSubmit = async (data: FormValues) => {
+    try {
+      const res = await forgotPassword(data).unwrap();
+      console.log(res);
+      alert("Password reset link sent successfully on your e-mail.");
+
+      navigate("/login", {
+        state: {
+          email: data.email,
+        },
+      });
+    } catch (error) {
+      console.log(error);
+      alert("Something went wrong");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-200 flex items-center justify-center p-6">
       <div className="w-full max-w-6xl overflow-hidden rounded-[32px] bg-white shadow-2xl ">
         <div className="flex items-center justify-center p-8 md:p-15">
-          <div className="w-full max-w-md  ">
+          <div className="w-full max-w-md ">
             <h1 className="text-4xl font-extrabold ml-25  text-[#00355f]">
               SmartStay
             </h1>

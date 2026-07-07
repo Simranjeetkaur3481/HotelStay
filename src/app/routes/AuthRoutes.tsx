@@ -4,6 +4,7 @@ import LoginScreen from "../../pages/auth/LoginScreen";
 import ForgotPasswordScreen from "@/pages/auth/ForgotPasswordScreen";
 import { authHero } from "@/constants/constant";
 import GuestRoute from "../guards/GuestRoutes";
+import ResetPassword from "@/components/auth/ResetPassword";
 
 export const authRoutes = [
   {
@@ -27,10 +28,17 @@ export const authRoutes = [
             },
           },
           {
-            path: "/forgotPassword",
+            path: "forgotPassword",
             element: <ForgotPasswordScreen />,
             handle: {
               hero: authHero.forgot,
+            },
+          },
+          {
+            path: "resetPassword",
+            element: <ResetPassword />,
+            handle: {
+              hero: authHero.reset,
             },
           },
         ],

@@ -6,7 +6,7 @@ export const HotelOwnerRoutes = [
     element: <DashboardLayout />,
     children: [
       {
-        paht: "/hotelOwner",
+        path: "/hotelOwner",
         element: <HotelOwnerHome />,
       },
     ],
