@@ -6,10 +6,12 @@ interface HotelHeaderProps {
   reviewCount: number;
 }
 
-import { ArrowLeft, Heart, MapPin, Share2, Star } from "lucide-react";
+import { Heart, MapPin, Share2, Star } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useAddToWishListMutation, useRemoveWishListMutation } from "@/store/api/wishListAPi";
+import toast from "react-hot-toast";
 
 interface HotelHeaderProps {
   name: string;
@@ -17,17 +19,38 @@ interface HotelHeaderProps {
   state: string;
   starRating: number;
   totalReviews: number;
+  isWishlisted: boolean;
+  id: number;
 }
 
-export default function HotelHeader({ name, city, state, starRating, totalReviews }: HotelHeaderProps) {
+export default function HotelHeader({
+  name,
+  city,
+  state,
+  starRating,
+  totalReviews,
+  isWishlisted,
+  id,
+}: HotelHeaderProps) {
+  const [addToWishListed] = useAddToWishListMutation();
+  const [removeFromWishList] = useRemoveWishListMutation();
+
+  const handleWishList = async () => {
+    try {
+      if (isWishlisted) {
+        await removeFromWishList(id);
+        toast.error(`Hotel ${name} removed from wishlist`);
+      } else {
+        await addToWishListed(id);
+        toast.success(`Hotel ${name} added to wishlist`);
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message || "something went wrong");
+    }
+  };
   return (
     <section className="mx-auto mt-8 max-w-7xl ">
-      {/* Back */}
-
-    
       <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-        {/* Left */}
-
         <div>
           <div className="flex flex-wrap items-center gap-3">
             <div className="flex items-center gap-1">
@@ -64,16 +87,14 @@ export default function HotelHeader({ name, city, state, starRating, totalReview
           </div>
         </div>
 
-        {/* Right */}
-
         <div className="flex gap-3">
           <Button variant="outline" className="gap-2">
             <Share2 className="size-4" />
             Share
           </Button>
 
-          <Button variant="outline" size="icon">
-            <Heart className="size-5" />
+          <Button variant="outline" size="icon" className="cursor-pointer" onClick={handleWishList}>
+            <Heart className={`size-5 ${isWishlisted ? "text-red-700 fill-red-700 " : ""}`} />
           </Button>
         </div>
       </div>

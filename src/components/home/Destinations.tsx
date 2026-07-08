@@ -19,6 +19,7 @@ const Destinations = () => {
         images: hotel.images,
         country: hotel.country,
         totalHotels: 0,
+        cityImageUrl:hotel.cityImageUrl
       };
     }
 

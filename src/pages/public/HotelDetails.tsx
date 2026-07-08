@@ -16,7 +16,6 @@ import { useNavigate, useParams } from "react-router-dom";
 const HotelDetails = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  console.log(typeof id);
   const { data, isError, isLoading } = useGetHotelByIdQuery(Number(id));
   const hotel = data?.data ?? null;
 
@@ -84,7 +83,7 @@ const HotelDetails = () => {
 
       <div className="mt-10 grid gap-10 lg:grid-cols-3">
         <div className="space-y-16 lg:col-span-2">
-          <Overview />
+          <Overview hotel={hotel} isLoading={isLoading} />
 
           <Amenities amenities={hotel.amenities} />
 

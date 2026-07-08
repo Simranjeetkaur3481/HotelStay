@@ -1,15 +1,14 @@
 import SearchEmpty from "./SearchEmpty";
-import SearchPagination from "./SearchPagination";
-import SearchResultCard from "./SearchResultCard";
-import SearchResultSkeleton from "./SearchResultSkeleton";
+import SearchResultCard from "./SearchResult";
+import SearchResultSkeleton from "./SearchResultSekelton";
 
 interface SearchResultListProps {
-  results: SearchResult[];
+  results: any[];
   isLoading: boolean;
-  totalPages: number;
-  currentPage: number;
-  onPageChange: (page: number) => void;
-  onReset: () => void;
+  totalPages?: number;
+  currentPage?: number;
+  onPageChange?: (page: number) => void;
+  onReset?: () => void;
 }
 
 export default function SearchResultList({
@@ -30,26 +29,23 @@ export default function SearchResultList({
     );
   }
 
-  if (results.length === 0) {
-    return <SearchEmpty onReset={onReset} />;
-  }
+  // if (results.length === 0) {
+  //   return <SearchEmpty onReset={onReset} />;
+  // }
 
+  console.log(results);
   return (
     <div className="space-y-6">
-
       {results.map((result) => (
-        <SearchResultCard
-          key={`${result.hotel.id}-${result.room.id}`}
-          result={result}
-        />
+        <SearchResultCard key={result.id} result={result} />
+        // <SearchResultCard key={`${result.id}-${result.room.id}`} result={result} />
       ))}
 
-      <SearchPagination
+      {/* <SearchPagination
         currentPage={currentPage}
         totalPages={totalPages}
         onPageChange={onPageChange}
-      />
-
+      /> */}
     </div>
   );
 }

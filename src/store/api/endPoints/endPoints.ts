@@ -69,6 +69,7 @@ export const endPoint = {
   review: {
     createReview: "/review",
     getMyReviews: "/review/my",
+    getAllRevies:"/review",
     getHotelReviews: (hotelId: number) => `/review/hotel/${hotelId}`,
   },
   // --Notifications

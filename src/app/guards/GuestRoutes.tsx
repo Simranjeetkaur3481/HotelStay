@@ -7,6 +7,12 @@ export default function GuestRoute() {
   const location = useLocation();
 
   if (isAuthenticated && user) {
+    const redirectTo = location.state?.redirectTo;
+    const bookingData = location.state?.bookingData;
+
+    if (redirectTo) {
+      return <Navigate to={redirectTo} state={bookingData} replace />;
+    }
     const from = location.state?.from?.pathname;
 
     return <Navigate to={from || getDashboardPathForRole(user.role)} replace />;

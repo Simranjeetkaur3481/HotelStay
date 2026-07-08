@@ -1,5 +1,6 @@
 import { Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useGetHotelReviewsQuery } from "@/store/api/reviewApi";
 
 const ratingData = [
   { label: "Cleanliness", value: 4.9 },
@@ -16,6 +17,9 @@ const featuredReview = {
 };
 
 export default function ReviewSection({hotel}) {
+  console.log(hotel,'ggg')
+  const {data} = useGetHotelReviewsQuery(hotel?.id);
+  console.log(data)
   return (
     <section className="space-y-10">
 

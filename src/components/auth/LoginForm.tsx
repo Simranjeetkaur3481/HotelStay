@@ -1,6 +1,6 @@
 import { FaApple, FaFacebookF } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
@@ -29,6 +29,8 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [login] = useLoginMutation();
   const navigate = useNavigate();
+  const { state } = useLocation();
+  console.log(state);
   const {
     register,
     handleSubmit,
@@ -42,6 +44,9 @@ const LoginForm = () => {
     resolver: zodResolver(schema),
   });
 
+  const redirectTo = state?.redirectTo;
+  const bookingData = state?.bookingData;
+
   const formSubmit = async (data: LoginType) => {
     try {
       const res = await login(data).unwrap();
@@ -51,7 +56,11 @@ const LoginForm = () => {
       const user = normalizeUser(res.data);
       console.log(user);
       dispatch(setUser(user));
-      navigate(getDashboardPathForRole(user.role));
+      if (redirectTo) {
+        navigate(redirectTo, { state: bookingData, replace: true });
+      } else {
+        navigate(getDashboardPathForRole(user.role), { replace: true });
+      }
     } catch (error: any) {
       console.log(error?.data?.message || "something went wrong");
     }

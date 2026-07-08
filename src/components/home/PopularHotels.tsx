@@ -8,7 +8,6 @@ import { Button } from "../ui/button";
 const PopularHotels = () => {
   const { data, isLoading, isError, refetch } = useGetHotelsQuery(undefined);
   const hotels = data?.data || [];
-  console.log(hotels);
   const polularHotels = [...hotels].sort((a, b) => b.starRating - a.starRating);
 
   return (

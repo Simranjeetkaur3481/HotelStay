@@ -12,6 +12,13 @@ export const reviewApi = baseApi.injectEndpoints({
       providesTags: ["Reviews"],
     }),
 
+    getAllReviews: builder.query<any,void>({
+      query: () => ({
+        url: endPoint.review.getAllRevies,
+        credentials: "include",
+      }),
+    }),
+
     getHotelReviews: builder.query({
       query: (hotelId) => ({
         url: endPoint.review.getHotelReviews(hotelId),
@@ -41,4 +48,5 @@ export const reviewApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useGetMyReviewsQuery, useGetHotelReviewsQuery, useCreateReviewMutation } = reviewApi;
+export const { useGetMyReviewsQuery, useGetHotelReviewsQuery, useCreateReviewMutation, useGetAllReviewsQuery } =
+  reviewApi;

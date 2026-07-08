@@ -13,13 +13,13 @@ type DestinationProps = {
   }[];
 };
 
-export default function DestinationCard({ country, city, totalHotels, images }: DestinationProps) {
+export default function DestinationCard({ country, city, totalHotels, images, cityImageUrl }: DestinationProps) {
   return (
     <Link to={`/hotels?search=${city}`}>
       <Card className="group relative overflow-hidden rounded-3xl border-0 shadow-lg transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
         {/* Image */}
         <img
-          src={`${API_BASE_URL}${images[0].imageUrl}`}
+          src={`${API_BASE_URL}${cityImageUrl}`}
           alt={city}
           className="h-80 w-full object-cover transition duration-700 group-hover:scale-110"
         />

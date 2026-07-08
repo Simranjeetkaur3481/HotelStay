@@ -1,103 +1,97 @@
-import { Link } from "react-router-dom";
-import { BedDouble, MapPin, Star, Users, Wifi, Coffee, ShieldCheck } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { BedDouble, Coffee, ShieldCheck, Users, Wifi } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { API_BASE_URL } from "@/constants/api";
 
-interface SearchResultCardProps {
-  result: any;
-}
-
-export default function SearchResultCard({ result }: SearchResultCardProps) {
-  const { hotel, room } = result;
-
+export default function SearchResultCard({ result }: any) {
+  console.log(result);
+  const { hotelId, hotelName, images, id, name, description, bedType, maxOccupancy, pricePerNight } = result;
+  const navigate = useNavigate();
   return (
-    <article className="overflow-hidden rounded-3xl border bg-background shadow-sm transition hover:shadow-lg">
-      <div className="flex flex-col lg:flex-row">
-        {/* Image */}
-
-        <img src={hotel.images[0].imageUrl} alt={hotel.name} className="h-64 w-full object-cover lg:h-auto lg:w-80" />
-
-        {/* Content */}
-
-        <div className="flex flex-1 flex-col justify-between p-6">
-          <div>
-            <div className="flex items-start justify-between">
-              <div>
-                <Link to={`/hotels/${hotel.id}`} className="text-2xl font-bold hover:text-primary">
-                  {hotel.name}
-                </Link>
-
-                <div className="mt-2 flex items-center gap-2 text-muted-foreground">
-                  <MapPin className="size-4" />
-
-                  {hotel.city}
-                </div>
-              </div>
-
-              <Badge>
-                <Star className="mr-1 size-4 fill-current" />
-
-                {hotel.rating}
-              </Badge>
-            </div>
-
-            <hr className="my-5" />
-
-            <h3 className="text-xl font-semibold">{room.name}</h3>
-
-            <p className="mt-2 text-muted-foreground">{room.description}</p>
-
-            <div className="mt-4 flex flex-wrap gap-4 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2">
-                <BedDouble className="size-4" />
-
-                {room.bedType}
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Users className="size-4" />
-                {room.maxOccupancy} Guests
-              </div>
-            </div>
-
-            <div className="mt-5 flex flex-wrap gap-2">
-              <Badge variant="secondary">
-                <Wifi className="mr-1 size-3" />
-                Free WiFi
-              </Badge>
-
-              <Badge variant="secondary">
-                <Coffee className="mr-1 size-3" />
-                Breakfast
-              </Badge>
-
-              <Badge variant="secondary">
-                <ShieldCheck className="mr-1 size-3" />
-                Free Cancellation
-              </Badge>
-            </div>
+    <Link to={`/roomDetails/${id}`}>
+      <article className="overflow-hidden rounded-2xl border bg-background transition-all hover:border-primary/20 hover:shadow-md">
+        <div className="flex flex-col md:flex-row">
+          {/* Image */}
+          <div className="h-52 w-full shrink-0 overflow-hidden md:h-auto md:w-56">
+            <img
+              src={`${API_BASE_URL}${images?.[0]?.imageUrl}`}
+              alt={hotelName}
+              className="h-full w-full object-cover transition-transform duration-300 hover:scale-105"
+            />
           </div>
 
-          {/* Footer */}
-
-          <div className="mt-8 flex flex-col gap-4 border-t pt-5 md:flex-row md:items-end md:justify-between">
+          {/* Content */}
+          <div className="flex flex-1 flex-col justify-between p-5">
             <div>
-              <p className="text-3xl font-bold text-primary">₹{room.pricePerNight.toLocaleString()}</p>
+              <div className="flex items-start justify-between gap-4">
+                <div>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      navigate(`/hotelDetails/${hotelId}`);
+                    }}
+                    className="text-xl font-semibold hover:text-primary"
+                  >
+                    {hotelName}
+                  </button>
 
-              <p className="text-sm text-muted-foreground">per night • Taxes extra</p>
+                  <h3 className="mt-1 text-sm font-medium text-muted-foreground">{name}</h3>
+                </div>
+
+                <Badge variant="secondary">Available</Badge>
+              </div>
+
+              <p className="mt-3 line-clamp-2 text-sm text-muted-foreground">{description}</p>
+
+              <div className="mt-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center gap-1.5">
+                  <BedDouble className="h-4 w-4" />
+                  {bedType}
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <Users className="h-4 w-4" />
+                  {maxOccupancy} Guests
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <Wifi className="h-4 w-4" />
+                  WiFi
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <Coffee className="h-4 w-4" />
+                  Breakfast
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck className="h-4 w-4" />
+                  Free Cancellation
+                </div>
+              </div>
             </div>
 
-            <div className="flex gap-3">
-              <Button asChild variant="outline">
-                <Link to={`/hotels/${hotel.id}`}>View Hotel</Link>
-              </Button>
+            {/* Footer */}
+            <div className="mt-5 flex flex-col gap-4 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-2xl font-bold text-primary">₹{pricePerNight.toLocaleString()}</p>
 
-              <Button>Select Room</Button>
+                <p className="text-xs text-muted-foreground">per night • Taxes extra</p>
+              </div>
+
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => navigate(`/roomDetails/${id}`)}>
+                  View
+                </Button>
+
+                <Button size="sm">Select Room</Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </Link>
   );
 }

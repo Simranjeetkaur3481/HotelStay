@@ -2,6 +2,7 @@ import DashboardLayout from "@/layouts/DashboardLayout";
 import CustomerHome from "@/pages/customer/CustomerHome";
 import RoleRoute from "../guards/RoleRoute";
 import { Roles } from "@/constants/roles";
+import BookingAuthPage from "@/pages/public/BookingAuthPage";
 
 export const customerRoutes = [
   {
@@ -14,6 +15,7 @@ export const customerRoutes = [
             path: "/customer",
             element: <CustomerHome />,
           },
+          
         ],
       },
     ],
