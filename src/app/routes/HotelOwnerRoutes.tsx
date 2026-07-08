@@ -1,7 +1,7 @@
 import DashboardLayout from "@/layouts/DashboardLayout";
 import HotelOwnerHome from "@/pages/hotelOwner/HotelOwnerHome";
 
-export const HotelOwnerRoutes = [
+export const hotelOwnerRoutes = [
   {
     element: <DashboardLayout />,
     children: [

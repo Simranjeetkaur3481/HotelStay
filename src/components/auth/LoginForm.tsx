@@ -9,8 +9,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useLoginMutation } from "@/store/api/authApi";
-import { getDashboardPathForRole } from "@/constants/roles";
-
+import { getDashboardPathForRole, normalizeUser } from "@/constants/roles";
+import { useAppDispatch } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
 import { useDispatch } from "react-redux";
 
@@ -45,15 +45,17 @@ const LoginForm = () => {
   const formSubmit = async (data: LoginType) => {
     try {
       const res = await login(data).unwrap();
-      console.log(res);
       if (!res.success || !res.data) {
         throw new Error(res?.message || "Invalid credentials");
       }
-      dispatch(setUser(res?.data));
-      navigate(getDashboardPathForRole(res.data.role));
+      const user = normalizeUser(res.data);
+      console.log(user);
+      dispatch(setUser(user));
+      navigate(getDashboardPathForRole(user.role));
     } catch (error: any) {
       console.log(error?.data?.message || "something went wrong");
     }
+    reset();
   };
   return (
 

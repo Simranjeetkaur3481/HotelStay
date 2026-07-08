@@ -3,22 +3,27 @@ import HotelCardSkeleton from "@/components/hotels/hotelLists/HotelCardSekelton"
 import HotelList from "@/components/hotels/hotelLists/HotelList";
 import SortDropdown from "@/components/hotels/hotelLists/SortDropDown";
 import MobileFilters from "@/components/hotels/searchResult/MobileFilter";
+import { Button } from "@/components/ui/button";
 import { useGetHotelsQuery } from "@/store/api/hotelApi";
-import { useState } from "react";
+import { AlertTriangle, RefreshCw } from "lucide-react";
+import { useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 
 const HotelListPage = () => {
-  const { data, isLoading, isError } = useGetHotelsQuery("");
+  const [searchParams] = useSearchParams();
+  const search = searchParams.get("search");
+  const queryParams = useMemo(() => (search ? { search } : undefined), [search]);
+  console.log(queryParams);
+  const { data, isLoading, isError, refetch } = useGetHotelsQuery(queryParams);
   const allHotels = data?.data || [];
   const [filters, setFilters] = useState("");
 
-  const handleSort = () =>{
-    
-  }
+  const handleSort = () => {};
 
   return (
     <section className="max-w-7xl mx-auto px-6 pb-10">
       <div className="mt-8 grid gap-8 lg:grid-cols-12">
-        <aside className="lg:col-span-3">
+        <aside className="lg:col-span-3 hidden lg:block">
           <FilterSidebar />
         </aside>
 
@@ -28,16 +33,33 @@ const HotelListPage = () => {
 
             <SortDropdown value={filters.sort} onChange={handleSort} />
           </div>
-          {isLoading && (
+          {isLoading ? (
             <div className="space-y-6">
               {Array.from({ length: 6 }).map((_, index) => (
                 <HotelCardSkeleton key={index} />
               ))}
             </div>
-          )}
-          {isError && <div>some error occured</div>}
+          ) : isError ? (
+            <div className="flex min-h-[400px] flex-col items-center justify-center rounded-3xl border border-destructive/20 bg-destructive/5 p-8 text-center">
+              <div className="mb-5 flex h-16 w-16 items-center justify-center rounded-full bg-destructive/10">
+                <AlertTriangle className="h-8 w-8 text-destructive" />
+              </div>
 
-          <HotelList hotels={allHotels} />
+              <h2 className="text-2xl font-semibold">Unable to Load Hotels</h2>
+
+              <p className="mt-2 max-w-md text-muted-foreground">
+                We couldn't load the available hotels at the moment. Please check your connection or try again in a few
+                moments.
+              </p>
+
+              <Button className="mt-6" onClick={() => refetch()}>
+                <RefreshCw className="mr-2 h-4 w-4" />
+                Try Again
+              </Button>
+            </div>
+          ) : (
+            <HotelList hotels={allHotels} />
+          )}
 
           {/* <Pagination /> */}
         </main>

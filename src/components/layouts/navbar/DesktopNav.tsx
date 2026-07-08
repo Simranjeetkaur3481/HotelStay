@@ -1,7 +1,5 @@
-
 import { NavLink } from "react-router-dom";
 import { navLinks } from "@/constants/constant";
-
 
 export default function DesktopNav() {
   return (
@@ -14,9 +12,7 @@ export default function DesktopNav() {
               className={({ isActive }) =>
                 [
                   "text-sm font-medium transition-colors",
-                  isActive
-                    ? "text-primary"
-                    : "text-muted-foreground hover:text-foreground",
+                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground",
                 ].join(" ")
               }
             >

@@ -20,14 +20,22 @@ import { LogOut } from "lucide-react";
 import { useDispatch } from "react-redux";
 import { logOut } from "@/store/slices/authSlice";
 
+type UserProps = {
+  avatar: string;
+  fullName: string;
+  email: string;
+  role: string;
+};
+
 export default function UserMenu() {
   const dispatch = useDispatch();
+  // const [logOut] = useLogoutMutation();
   const { user } = useAuth();
+  // console.log("user", user);
 
   const handleLogout = () => {
     dispatch(logOut());
   };
-  console.log("user", user);
   // Guest
   if (!user) {
     return (
@@ -80,7 +88,7 @@ export default function UserMenu() {
           </>
         )}
 
-        {user?.role === "owner" && (
+        {user?.role === "HotelOwner" && (
           <>
             <DropdownMenuItem asChild>
               <NavLink to="/owner">Dashboard</NavLink>
@@ -92,7 +100,7 @@ export default function UserMenu() {
           </>
         )}
 
-        {user?.role === "admin" && (
+        {user?.role === "Admin" && (
           <DropdownMenuItem asChild>
             <NavLink to="/admin">Dashboard</NavLink>
           </DropdownMenuItem>
