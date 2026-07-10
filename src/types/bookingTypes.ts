@@ -11,3 +11,9 @@ export interface BookingFormValues {
 
   coupon: string;
 }
+
+export interface BookingDetails  {
+  checkIn: string;
+  checkOut: string;
+  guests: number;
+};

@@ -2,7 +2,7 @@ import { adminRoutes } from "./AdminRoutes";
 import { authRoutes } from "./AuthRoutes";
 import { customerRoutes } from "./CustomerRoutes";
 import { hotelOwnerRoutes } from "./HotelOwnerRoutes";
+import { protectedRoutes } from "./ProtectedRoutes";
 import { publicRoutes } from "./PublicRoutes";
-import { CustomerRoutes } from "./CustomerRoutes";
 
-export const routes = [...publicRoutes, ...authRoutes, ...customerRoutes, ...hotelOwnerRoutes, ...adminRoutes];
+export const routes = [...publicRoutes, ...authRoutes, ...customerRoutes, ...hotelOwnerRoutes, ...adminRoutes,...protectedRoutes];

@@ -1,19 +1,22 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { CalendarDays, MapPin, Search, Users } from "lucide-react";
+import { addDays, getDefaultBookingDates, getToday, handleCheckInChange } from "@/constants/booking";
+import { CalendarDays, MapPin, Search } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function SearchCard() {
-  const { register, handleSubmit } = useForm({
+  const { checkIn, checkOut } = getDefaultBookingDates();
+  const today = getToday();
+  const { register, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
       destination: "",
-      CheckInDate: "",
-      CheckOutDate: "",
+      checkIn: checkIn || "",
+      checkOut: checkOut || "",
     },
   });
 
-  //localhost:3000/search?destination=goa&checkIn=2026-07-06&checkOut=2026-07-07&_rsc=2Md0sTUZcnjCijMr
   const navigate = useNavigate();
 
   const formSubmit = (data) => {
@@ -24,20 +27,20 @@ export default function SearchCard() {
         params.set("destination", data.destination.trim());
       }
 
-      if (data.CheckInDate) {
-        params.set("CheckInDate", data.CheckInDate);
+      if (data.checkIn) {
+        params.set("checkIn", data.checkIn);
       }
 
-      if (data.CheckOutDate) {
-        params.set("CheckOutDate", data.CheckOutDate);
+      if (data.checkOut) {
+        params.set("checkOut", data.checkOut);
       }
-      if (new Date(data.CheckOutDate) <= new Date(data.checkInDate)) {
-        console.log("chekout date must be after checkin date");
+      if (new Date(data.checkOut) <= new Date(data.checkIn)) {
+        toast.error("Check-out must be after check-in.");
         return;
       }
       navigate(`searchRooms?${params.toString()}`);
     } catch (error) {
-      console.log(error);
+      toast.error("Unable to search right now.");
     }
   };
   return (
@@ -46,7 +49,7 @@ export default function SearchCard() {
         <form onSubmit={handleSubmit(formSubmit)} className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
           {/* destination */}
           <div className="space-y-2">
-            <label className="text-sm font-medium">destination</label>
+            <label className="text-sm font-medium">Destination</label>
 
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
@@ -68,8 +71,10 @@ export default function SearchCard() {
 
               <Input
                 type="date"
-                {...register("CheckInDate", { required: "checkin date is required" })}
+                {...register("checkIn", { required: "checkin date is required" })}
                 className="pl-10"
+                min={today}
+                onChange={(e) => handleCheckInChange(e.target.value, setValue)}
               />
             </div>
           </div>
@@ -83,8 +88,9 @@ export default function SearchCard() {
 
               <Input
                 type="date"
-                {...register("CheckOutDate", { required: "checkout date is required" })}
+                {...register("checkOut", { required: "checkout date is required" })}
                 className="pl-10"
+                min={addDays(watch("checkIn"), 1)}
               />
             </div>
           </div>

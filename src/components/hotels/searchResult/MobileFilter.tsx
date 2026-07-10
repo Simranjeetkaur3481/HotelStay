@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import FilterSidebar from "../hotelLists/FilterSidebar";
+import FilterSidebar, { type ListingFilters } from "../hotelLists/FilterSidebar";
 
 // import FilterSidebar from "./FilterSidebar";
 
@@ -20,6 +20,9 @@ import FilterSidebar from "../hotelLists/FilterSidebar";
 export default function MobileFilters({
   filters,
   onChange,
+}: {
+  filters: ListingFilters;
+  onChange: (filters: ListingFilters) => void;
 }) {
   return (
     <Sheet>
@@ -42,11 +45,7 @@ export default function MobileFilters({
         </SheetHeader>
 
         <div className="mt-6">
-          <FilterSidebar
-            filters={filters}
-            onChange={onChange}
-            mobile
-          />
+          <FilterSidebar filters={filters} onChange={onChange} />
         </div>
       </SheetContent>
     </Sheet>

@@ -9,7 +9,7 @@ export type Role = (typeof Roles)[keyof typeof Roles];
 
 export const ROLE_DASHBOARD_PATHS: Record<Role, string> = {
   ADMIN: "/admin",
-  HOTEL_OWNER: "/hotelOwner",
+  HOTEL_OWNER: "/dashboard/hotelOwner",
   CUSTOMER: "/customer",
   SUPPORT: "/support",
 };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,24 +46,22 @@ const ResetPassword = () => {
 
   const onSubmit = async (data: FormValues) => {
     try {
-      const res = await resetPassword({
+      await resetPassword({
         token,
         password: data.password,
         confirmPassword: data.confirmPassword,
       }).unwrap();
-      console.log(res);
-      
+ 
       toast.success("Password reset successfully");
       navigate("/login");
-    } catch (error) {
-      console.log(error);
+    } catch {
       toast.error("Failed to reset password");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-200 flex items-center justify-center p-6">
-      <div className="w-full max-w-md rounded-3xl bg-white shadow-2xl p-8">
+    <div className="w-full max-w-md">
+      <div className="rounded-2xl border bg-background p-6 shadow-sm sm:p-8">
         <div className="flex justify-center">
           <div className="h-20 w-20 rounded-full bg-blue-100 flex items-center justify-center">
             <FiLock className="text-4xl text-[#00355f]" />

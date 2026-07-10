@@ -1,38 +1,33 @@
-import { CalendarDays, Hotel, Moon, Users } from "lucide-react";
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useGetRoomDetailQuery } from "@/store/api/roomApi";
-import { API_BASE_URL } from "@/constants/api";
-import { calculateNights } from "@/constants/booking";
+import { addDays, calculateNights } from "@/constants/booking";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
 import { useFormContext } from "react-hook-form";
+import type { BookingFormValues } from "@/types/bookingTypes";
 
 type BookingSummaryProps = {
-  // roomId: number;
   hotelId: number;
-
   checkIn: string;
   checkOut: string;
-
   guests: number;
-
   discount: number;
+  isLoading: boolean;
 };
 
-export default function BookingSummary({ hotelId,  discount }: BookingSummaryProps) {
-  const { register, watch } = useFormContext<BookingFormValues>();
+export default function BookingSummary({ discount, isLoading }: BookingSummaryProps) {
+  const { register, watch, setValue } = useFormContext<BookingFormValues>();
 
   const checkIn = watch("checkIn");
   const checkOut = watch("checkOut");
-  const guests = watch("guests");
   const { id } = useParams();
   const { data } = useGetRoomDetailQuery(id);
   const room = data?.data ?? {};
+  const today = new Date().toISOString().split("T")[0];
 
-  const nights = calculateNights(checkIn, checkOut);
+  const nights = Math.max(0, calculateNights(checkIn, checkOut));
 
   const subtotal = room.pricePerNight * nights;
 
@@ -42,30 +37,58 @@ export default function BookingSummary({ hotelId,  discount }: BookingSummaryPro
 
   const total = subtotal + taxes - discountAmount;
 
+  const handleCheckInChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    register("checkIn").onChange(e);
+
+    if (!checkOut || checkOut <= value) {
+      setValue("checkOut", addDays(value, 1), {
+        shouldValidate: true,
+      });
+    }
+  };
+
+  const handleCheckOutChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+
+    if (checkIn && value <= checkIn) {
+      setValue("checkOut", addDays(checkIn, 1), {
+        shouldValidate: true,
+      });
+      return;
+    }
+
+    setValue("checkOut", value, {
+      shouldValidate: true,
+    });
+  };
+
   return (
     <Card className="sticky top-24 overflow-hidden">
-      <img src={`${API_BASE_URL}${room.images[0].imageUrl}`} alt={room.name} className="h-52 w-full object-cover" />
-
       <CardHeader>
-        <CardTitle>{room.name}</CardTitle>
+        <CardTitle>{room?.name}</CardTitle>
 
-        <p className="text-sm text-muted-foreground">{room.hotelName}</p>
+        <p className="text-sm text-muted-foreground">{room?.hotelName}</p>
       </CardHeader>
 
       <CardContent className="space-y-6">
-        {/* Stay */}
-
         <div className="space-y-4">
           <div>
             <Label>Check In</Label>
 
-            <Input type="date" {...register("checkIn")} />
+            <Input type="date" {...register("checkIn")} min={today} onChange={handleCheckInChange} />
           </div>
 
           <div>
             <Label>Check Out</Label>
 
-            <Input type="date" {...register("checkOut")} />
+            <Input
+              type="date"
+              {...register("checkOut")}
+              min={checkIn ? addDays(checkIn, 1) : addDays(today, 1)}
+              onChange={handleCheckOutChange}
+            />
           </div>
 
           <div>
@@ -79,18 +102,7 @@ export default function BookingSummary({ hotelId,  discount }: BookingSummaryPro
               })}
             />
           </div>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <Moon className="h-4 w-4 text-primary" />
-
-              <span className="text-sm">Nights</span>
-            </div>
-
-            <span className="text-sm font-medium">{nights}</span>
-          </div>
         </div>
-
-        {/* Price */}
 
         <div className="space-y-3 border-y py-5">
           <div className="flex justify-between text-sm">
@@ -122,14 +134,9 @@ export default function BookingSummary({ hotelId,  discount }: BookingSummaryPro
           </div>
         </div>
 
-        {/* Notice */}
-        <Button type="submit" size="lg" className="w-full">
-          Continue to Payment
+        <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+          {isLoading ? "Processing...":"Continue to Payment"}
         </Button>
-
-        <div className="rounded-lg bg-muted p-3 text-sm text-muted-foreground">
-          Final pricing will be confirmed before payment.
-        </div>
       </CardContent>
     </Card>
   );

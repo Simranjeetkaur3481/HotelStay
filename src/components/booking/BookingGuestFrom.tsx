@@ -38,7 +38,7 @@ export default function BookingGuestForm() {
         </div>
 
 
-        <div className="grid gap-5 md:grid-cols-2">
+        <div className="grid gap-5 ">
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
 
@@ -54,7 +54,7 @@ export default function BookingGuestForm() {
             {errors.email && <p className="text-sm text-destructive">{errors.email.message}</p>}
           </div>
 
-          <div className="space-y-2">
+          {/* <div className="space-y-2">
             <Label htmlFor="phoneNumber">Phone Number</Label>
 
             <Input
@@ -66,7 +66,7 @@ export default function BookingGuestForm() {
             />
 
             {errors.phoneNumber && <p className="text-sm text-destructive">{errors.phoneNumber.message}</p>}
-          </div>
+          </div> */}
         </div>
 
 

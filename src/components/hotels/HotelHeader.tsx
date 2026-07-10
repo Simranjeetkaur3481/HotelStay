@@ -7,6 +7,7 @@ interface HotelHeaderProps {
 }
 
 import { Heart, MapPin, Share2, Star } from "lucide-react";
+import { useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -32,20 +33,23 @@ export default function HotelHeader({
   isWishlisted,
   id,
 }: HotelHeaderProps) {
+  const [wishlisted, setWishlisted] = useState(Boolean(isWishlisted));
   const [addToWishListed] = useAddToWishListMutation();
   const [removeFromWishList] = useRemoveWishListMutation();
 
   const handleWishList = async () => {
     try {
-      if (isWishlisted) {
-        await removeFromWishList(id);
-        toast.error(`Hotel ${name} removed from wishlist`);
+      if (wishlisted) {
+        await removeFromWishList(id).unwrap();
+        setWishlisted(false);
+        toast.success(`Hotel ${name} removed from wishlist`);
       } else {
-        await addToWishListed(id);
+        await addToWishListed({ hotelId: id }).unwrap();
+        setWishlisted(true);
         toast.success(`Hotel ${name} added to wishlist`);
       }
-    } catch (error: any) {
-      toast.error(error?.data?.message || "something went wrong");
+    } catch {
+      toast.error("Unable to update wishlist");
     }
   };
   return (
@@ -94,7 +98,7 @@ export default function HotelHeader({
           </Button>
 
           <Button variant="outline" size="icon" className="cursor-pointer" onClick={handleWishList}>
-            <Heart className={`size-5 ${isWishlisted ? "text-red-700 fill-red-700 " : ""}`} />
+            <Heart className={`size-5 ${wishlisted ? "text-red-700 fill-red-700 " : ""}`} />
           </Button>
         </div>
       </div>

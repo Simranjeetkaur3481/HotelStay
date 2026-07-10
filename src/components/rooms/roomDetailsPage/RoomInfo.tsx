@@ -1,8 +1,10 @@
 import { BedDouble, Users, Bath, Snowflake, Star } from "lucide-react";
 
 import Amenities from "@/components/hotels/Amenities";
+import { getEffectiveRoomPricing } from "@/lib/roomPricing";
 
 export default function RoomInfo({ room, hotel }: any) {
+  const pricing = getEffectiveRoomPricing(room);
   return (
     <section className="space-y-6">
       {/* Header */}
@@ -20,10 +22,16 @@ export default function RoomInfo({ room, hotel }: any) {
           <span>{room.hotelName}</span>
         </div>
 
-        <p className="mt-4 text-3xl font-bold text-primary">
-          ₹{room.pricePerNight}
-          <span className="ml-2 text-base font-normal text-muted-foreground">/ night</span>
-        </p>
+        <div className="mt-4">
+          {pricing.hasDiscount && (
+            <p className="text-base text-muted-foreground line-through">₹{pricing.basePrice.toLocaleString()}</p>
+          )}
+          <p className="text-3xl font-bold text-primary">
+            ₹{pricing.effectivePrice.toLocaleString()}
+            <span className="ml-2 text-base font-normal text-muted-foreground">/ night</span>
+          </p>
+          {pricing.promotionLabel && <p className="mt-1 text-sm font-medium text-emerald-600">{pricing.promotionLabel}</p>}
+        </div>
       </div>
 
       {/* Description */}
@@ -47,7 +55,6 @@ export default function RoomInfo({ room, hotel }: any) {
 
       {/* Amenities */}
       <div>
-        <h2 className="mb-4 text-lg font-semibold">Popular Amenities</h2>
         <Amenities amenities={hotel.amenities} />
       </div>
     </section>

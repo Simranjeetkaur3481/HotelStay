@@ -8,9 +8,31 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
-import { AMENITIES, PROPERTY_TYPES, RATINGS } from "@/constants/hotelFilter";
+import { RATINGS } from "@/constants/hotelFilter";
 
-export default function FilterSidebar() {
+export type ListingFilters = {
+  maxPrice: number;
+  ratings: number[];
+};
+
+type FilterSidebarProps = {
+  filters: ListingFilters;
+  onChange: (filters: ListingFilters) => void;
+};
+
+export default function FilterSidebar({ filters, onChange }: FilterSidebarProps) {
+  const toggleRating = (rating: number) => {
+    const exists = filters.ratings.includes(rating);
+    onChange({
+      ...filters,
+      ratings: exists ? filters.ratings.filter((r) => r !== rating) : [...filters.ratings, rating],
+    });
+  };
+
+  const handleClear = () => {
+    onChange({ maxPrice: 20000, ratings: [] });
+  };
+
   return (
   <aside className="rounded-3xl border p-6">
 
@@ -23,6 +45,7 @@ export default function FilterSidebar() {
         <Button
           variant="ghost"
           size="sm"
+          onClick={handleClear}
         >
           Clear
         </Button>
@@ -37,7 +60,8 @@ export default function FilterSidebar() {
         </h3>
 
         <Slider
-          defaultValue={[5000]}
+          value={[filters.maxPrice]}
+          onValueChange={(value) => onChange({ ...filters, maxPrice: value[0] ?? filters.maxPrice })}
           max={20000}
           step={500}
         />
@@ -62,83 +86,10 @@ export default function FilterSidebar() {
             key={rating}
             className="flex items-center space-x-2"
           >
-            <Checkbox id={`rating-${rating}`} />
+            <Checkbox id={`rating-${rating}`} checked={filters.ratings.includes(rating)} onCheckedChange={() => toggleRating(rating)} />
 
             <Label htmlFor={`rating-${rating}`}>
               {rating} Stars & Up
-            </Label>
-          </div>
-        ))}
-
-      </section>
-
-      {/* Property */}
-
-      <section className="mt-8 space-y-3">
-
-        <h3 className="font-semibold">
-          Property Type
-        </h3>
-
-        {PROPERTY_TYPES.map((type) => (
-          <div
-            key={type}
-            className="flex items-center space-x-2"
-          >
-            <Checkbox id={type} />
-
-            <Label htmlFor={type}>
-              {type}
-            </Label>
-          </div>
-        ))}
-
-      </section>
-
-      {/* Amenities */}
-
-      <section className="mt-8 space-y-3">
-
-        <h3 className="font-semibold">
-          Amenities
-        </h3>
-
-        {AMENITIES.map((item) => (
-          <div
-            key={item}
-            className="flex items-center space-x-2"
-          >
-            <Checkbox id={item} />
-
-            <Label htmlFor={item}>
-              {item}
-            </Label>
-          </div>
-        ))}
-
-      </section>
-
-      {/* Availability */}
-
-      <section className="mt-8 space-y-3">
-
-        <h3 className="font-semibold">
-          Availability
-        </h3>
-
-        {[
-          "Free Cancellation",
-          "Breakfast Included",
-          "Available Rooms Only",
-        ].map((item) => (
-          <div
-            key={item}
-            className="flex items-center space-x-2"
-          >
-            <Checkbox id={item} />
-
-            <Label htmlFor={item}>
-              {item}
             </Label>
           </div>
         ))}

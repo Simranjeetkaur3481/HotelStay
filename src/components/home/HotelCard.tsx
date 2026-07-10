@@ -7,8 +7,9 @@ import {
   useAddToWishListMutation,
   useRemoveWishListMutation,
 } from "@/store/api/wishListAPi";
-import { id } from "zod/v4/locales";
 import { useState } from "react";
+import type { MouseEvent } from "react";
+import toast from "react-hot-toast";
 
 type HotelCardProps = {
   id: number;
@@ -20,7 +21,7 @@ type HotelCardProps = {
   totalReviews: number;
   startingRoomPrice: number;
   images: { imageUrl: string }[];
-  isWishlisted: string;
+  isWishlisted: boolean;
 };
 
 export default function HotelCard({
@@ -33,26 +34,29 @@ export default function HotelCard({
   totalReviews,
   startingRoomPrice,
   images,
-  isWishlisted
+  isWishlisted,
 }: HotelCardProps) {
+  const [wishlisted, setWishlisted] = useState(Boolean(isWishlisted));
+  const [addToWishList] = useAddToWishListMutation();
+  const [removeWishList] = useRemoveWishListMutation();
 
-const [addToWishList] = useAddToWishListMutation();
-const [removeWishList] = useRemoveWishListMutation();
-
-const handleWishlist=async()=>{
-  try {
-    if(isWishlisted){
-      await removeWishList(id).unwrap();
-      
-    }else{
-      await addToWishList({hotelId:id}).unwrap();
-     
+  const handleWishlist = async (e: MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      if (wishlisted) {
+        await removeWishList(id).unwrap();
+        setWishlisted(false);
+        toast.success("Removed from wishlist");
+      } else {
+        await addToWishList({ hotelId: id }).unwrap();
+        setWishlisted(true);
+        toast.success("Added to wishlist");
+      }
+    } catch {
+      toast.error("Unable to update wishlist");
     }
-    
-  } catch (error) {
-    
-  }
-}
+  };
   return (
     <Link to={`/hotelDetails/${id}`}>
       <Card className="group overflow-hidden rounded-2xl border-0 shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl pt-0 min-w-[18rem]">
@@ -68,7 +72,7 @@ const handleWishlist=async()=>{
             onClick={handleWishlist}
           className="absolute right-4 top-4 rounded-full bg-white/90 p-2 shadow">
             <Heart className={`size-5 transition ${
-      isWishlisted ? "fill-red-500 text-red-500" : "text-gray-500"
+      wishlisted ? "fill-red-500 text-red-500" : "text-gray-500"
     }`} />
           </button>
 

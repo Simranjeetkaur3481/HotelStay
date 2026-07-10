@@ -8,30 +8,58 @@ import { useGetHotelsQuery } from "@/store/api/hotelApi";
 import { AlertTriangle, RefreshCw } from "lucide-react";
 import { useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
+import type { ListingFilters } from "@/components/hotels/hotelLists/FilterSidebar";
 
 const HotelListPage = () => {
   const [searchParams] = useSearchParams();
   const search = searchParams.get("search");
   const queryParams = useMemo(() => (search ? { search } : undefined), [search]);
-  console.log(queryParams);
   const { data, isLoading, isError, refetch } = useGetHotelsQuery(queryParams);
   const allHotels = data?.data || [];
-  const [filters, setFilters] = useState("");
+  const [filters, setFilters] = useState<ListingFilters>({ maxPrice: 20000, ratings: [] });
+  const [sortValue, setSortValue] = useState("recommended");
 
-  const handleSort = () => {};
+  const filteredHotels = useMemo(() => {
+    const byPriceAndRating = allHotels.filter((hotel: any) => {
+      const price = Number(hotel.startingRoomPrice ?? 0);
+      const rating = Number(hotel.starRating ?? 0);
+      const matchPrice = price <= filters.maxPrice;
+      const matchRating = !filters.ratings.length || filters.ratings.some((r) => rating >= r);
+      return matchPrice && matchRating;
+    });
+
+    const hotels = [...byPriceAndRating];
+    switch (sortValue) {
+      case "priceAsc":
+        return hotels.sort((a, b) => (a.startingRoomPrice ?? 0) - (b.startingRoomPrice ?? 0));
+      case "priceDesc":
+        return hotels.sort((a, b) => (b.startingRoomPrice ?? 0) - (a.startingRoomPrice ?? 0));
+      case "ratingDesc":
+        return hotels.sort((a, b) => (b.starRating ?? 0) - (a.starRating ?? 0));
+      case "reviewsDesc":
+        return hotels.sort((a, b) => (b.totalReviews ?? 0) - (a.totalReviews ?? 0));
+      default:
+        return hotels;
+    }
+  }, [allHotels, filters, sortValue]);
 
   return (
     <section className="max-w-7xl mx-auto px-6 pb-10">
       <div className="mt-8 grid gap-8 lg:grid-cols-12">
         <aside className="lg:col-span-3 hidden lg:block">
-          <FilterSidebar />
+          <FilterSidebar filters={filters} onChange={setFilters} />
         </aside>
 
         <main className="space-y-6 lg:col-span-9">
           <div className="mt-6 flex items-center justify-between lg:hidden">
             <MobileFilters filters={filters} onChange={setFilters} />
 
-            <SortDropdown value={filters.sort} onChange={handleSort} />
+            <SortDropdown value={sortValue} onChange={setSortValue} />
+          </div>
+
+          <div className="hidden items-center justify-between lg:flex">
+            <p className="text-sm text-muted-foreground">{filteredHotels.length} hotel(s) found</p>
+            <SortDropdown value={sortValue} onChange={setSortValue} />
           </div>
           {isLoading ? (
             <div className="space-y-6">
@@ -58,7 +86,7 @@ const HotelListPage = () => {
               </Button>
             </div>
           ) : (
-            <HotelList hotels={allHotels} />
+            <HotelList hotels={filteredHotels} />
           )}
 
           {/* <Pagination /> */}

@@ -23,6 +23,13 @@ export const paymentApi = baseApi.injectEndpoints({
       },
       providesTags: ["Bookings"],
     }),
+    getBookingById: builder.query({
+      query: (id) => ({
+        url: endPoint.bookings.bookingById(id),
+        credentials: "include",
+      }),
+      providesTags: ["Bookings"],
+    }),
 
     createPayment: builder.mutation({
       query: (data) => ({
@@ -45,5 +52,5 @@ export const paymentApi = baseApi.injectEndpoints({
   }),
 });
 
-export const { useCreateBookingMutation, useGetBookingsQuery, useCreatePaymentMutation, useVerifyPaymentMutation } =
+export const { useCreateBookingMutation, useGetBookingsQuery, useCreatePaymentMutation, useVerifyPaymentMutation,useGetBookingByIdQuery } =
   paymentApi;

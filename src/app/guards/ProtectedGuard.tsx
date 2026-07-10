@@ -1,7 +1,7 @@
 import useAuth from "@/hooks/useAuth";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
 
-const ProtectedRoutes = () => {
+const ProtectedGuard = () => {
   const { isAuthenticated } = useAuth();
   const location = useLocation();
   if (!isAuthenticated) {
@@ -11,4 +11,4 @@ const ProtectedRoutes = () => {
   return <Outlet />
 };
 
-export default ProtectedRoutes;
+export default ProtectedGuard;

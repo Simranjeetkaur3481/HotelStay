@@ -1,19 +1,27 @@
 import { ArrowLeft, CalendarDays, Check, Lock, Users } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { API_BASE_URL } from "@/constants/api";
 
 export default function BookingAuthPage() {
   const navigate = useNavigate();
   const { state } = useLocation();
-  console.log(state);
-  // Replace with real data later
+  useEffect(() => {
+    if (!state?.roomId) {
+      navigate("/hotels", { replace: true });
+    }
+  }, [navigate, state?.roomId]);
+
   const booking = {
-    roomName: "Deluxe King Room",
-    hotelName: "Grand Palace Resort",
-    roomImage: "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900",
+    roomName: state?.room?.name,
+    hotelName: state?.room?.hotelName,
+    roomImage:
+      state?.room?.images?.[0]?.imageUrl
+      ?? "https://images.unsplash.com/photo-1566073771259-6a8506099945?w=900",
     checkIn: state?.checkIn || "12 Jul",
     checkOut: state?.checkOut || "15 Jul",
     guests: state?.guests || 2,
@@ -49,7 +57,11 @@ export default function BookingAuthPage() {
         {/* Booking Summary */}
 
         <Card className="overflow-hidden lg:col-span-2">
-          <img src={booking.roomImage} alt={booking.roomName} className="h-60 w-full object-cover" />
+          <img
+            src={booking.roomImage.startsWith("http") ? booking.roomImage : `${API_BASE_URL}${booking.roomImage}`}
+            alt={booking.roomName}
+            className="h-60 w-full object-cover"
+          />
 
           <div className="space-y-6 p-6">
             <div>
@@ -90,14 +102,6 @@ export default function BookingAuthPage() {
 
                 <span>{booking.guests}</span>
               </div>
-            </div>
-
-            <Separator />
-
-            <div className="flex items-center justify-between text-lg font-semibold">
-              <span>Estimated Total</span>
-
-              <span className="text-primary">{booking.total}</span>
             </div>
           </div>
         </Card>

@@ -1,13 +1,12 @@
-import { getDashboardPathForRole } from "@/constants/roles";
+import type { Role } from "@/constants/roles";
 import useAuth from "@/hooks/useAuth";
 import { Navigate, Outlet, useLocation } from "react-router-dom";
+import { getDashboardPathForRole } from "@/constants/roles";
 
-const RoleRoute = ({ allowedRoles }) => {
-  console.log("RoleRoute Mounted");
+const RoleRoute = ({ allowedRoles }: { allowedRoles: Role[] }) => {
   const { isAuthenticated, user } = useAuth();
- console.log("auth",isAuthenticated);
-  console.log(getDashboardPathForRole(user.role.toUpperCase()));
   const location = useLocation();
+
   if (!isAuthenticated) {
     return <Navigate to="/login" replace state={{ from: location }} />;
   }

@@ -7,10 +7,12 @@ import Overview from "@/components/hotels/Overview";
 import Policies from "@/components/hotels/Policies";
 import ReviewSection from "@/components/hotels/ReviewSection";
 import Rooms from "@/components/hotels/Room";
-import SimilarHotels from "@/components/hotels/SimilarHotels";
 import { Button } from "@/components/ui/button";
+import { getDefaultBookingDates } from "@/constants/booking";
 import { useGetHotelByIdQuery } from "@/store/api/hotelApi";
+import type { BookingDetails } from "@/types/bookingTypes";
 import { AlertTriangle, ArrowLeft, RefreshCw } from "lucide-react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const HotelDetails = () => {
@@ -18,6 +20,18 @@ const HotelDetails = () => {
   const navigate = useNavigate();
   const { data, isError, isLoading } = useGetHotelByIdQuery(Number(id));
   const hotel = data?.data ?? null;
+  const { checkIn, checkOut } = getDefaultBookingDates();
+
+  const [bookingDetails, setBookingDetails] = useState({
+    checkIn: checkIn,
+    checkOut: checkOut,
+    guests: 1,
+  });
+  const [search, setSearch] = useState<BookingDetails | null>(null);
+
+  const handleCheckAvailablity = () => {
+    setSearch(bookingDetails);
+  };
 
   if (isLoading) return <p className="flex h-40 items-center justify-center text-red-700">Loading...</p>;
 
@@ -68,8 +82,6 @@ const HotelDetails = () => {
         </div>
       </section>
     );
-  console.log(data);
-
   return (
     <section className="max-w-7xl mx-auto px-6">
       <Button variant="ghost" className="mt-6 px-0" onClick={() => navigate(-1)}>
@@ -87,7 +99,7 @@ const HotelDetails = () => {
 
           <Amenities amenities={hotel.amenities} />
 
-          <Rooms hotelId={hotel.id} />
+          <Rooms hotelId={hotel.id} search={search} />
 
           <ReviewSection hotel={hotel} />
 
@@ -95,8 +107,14 @@ const HotelDetails = () => {
 
           <Policies />
         </div>
-
-        <BookingCard price={hotel.startingRoomPrice} />
+        <div className="lg:sticky lg:top-24 lg:self-start">
+          <BookingCard
+            price={hotel.startingRoomPrice}
+            bookingDetails={bookingDetails}
+            onChange={setBookingDetails}
+            handleCheckAvailablity={handleCheckAvailablity}
+          />
+        </div>
       </div>
 
       {/* <SimilarHotels hotels={hotel} /> */}

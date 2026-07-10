@@ -2,18 +2,27 @@ import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { Button } from "@/components/ui/button";
 import type { BookingFormValues } from "@/types/bookingTypes";
 import BookingGuestForm from "@/components/booking/BookingGuestFrom";
-import SpecialRequest from "@/components/booking/SpecialRequest";
 import CouponCard from "@/components/booking/CouponCard";
 import BookingSummary from "@/components/booking/BookingSummary";
 import useAuth from "@/hooks/useAuth";
+import toast from "react-hot-toast";
+import { useCreateBookingMutation } from "@/store/api/paymentApi";
 
 export default function BookingPage() {
   const navigate = useNavigate();
+  const [createBooking, { isLoading }] = useCreateBookingMutation();
   const { state } = useLocation();
   const { user } = useAuth();
+  if (!state?.roomId || !state?.hotelId || !state?.checkIn || !state?.checkOut) {
+    return (
+      <div className="container py-20 text-center">
+        <h2 className="text-2xl font-semibold">Invalid Booking Request</h2>
+        <p className="mt-2 text-muted-foreground">Please select a room first.</p>
+      </div>
+    );
+  }
 
   const methods = useForm<BookingFormValues>({
     defaultValues: {
@@ -32,32 +41,26 @@ export default function BookingPage() {
 
   const [discount, setDiscount] = useState(0);
 
-  if (!state) {
-    return (
-      <div className="container py-20 text-center">
-        <h2 className="text-2xl font-semibold">Invalid Booking Request</h2>
-
-        <p className="mt-2 text-muted-foreground">Please select a room first.</p>
-      </div>
-    );
-  }
-
   const { roomId, hotelId, checkIn, checkOut, guests } = state;
 
-  const onSubmit = (data: BookingFormValues) => {
-    navigate("/payment", {
-      state: {
-        roomId,
-        hotelId,
-        checkIn,
-        checkOut,
-        guests,
-
-        guest: data,
-
-        discount,
-      },
-    });
+  const onSubmit = async (data: BookingFormValues) => {
+    const newData = {
+      hotelId,
+      roomId,
+      checkInDate: data.checkIn,
+      checkOutDate: data.checkOut,
+      guestCount: data.guests,
+    };
+    if (new Date(checkOut) <= new Date(checkIn)) {
+      toast.error("Check-out date must be after check-in date.");
+      return;
+    }
+    try {
+      const booking = await createBooking(newData).unwrap();
+      navigate(`/booking/${booking?.data?.id}/payment`);
+    } catch (error) {
+      toast.error("Unable to create booking. Please try again.");
+    }
   };
 
   return (
@@ -73,9 +76,6 @@ export default function BookingPage() {
           <div className="grid gap-8 lg:grid-cols-12">
             <div className="space-y-6 lg:col-span-8">
               <BookingGuestForm />
-
-              <SpecialRequest />
-
               <CouponCard discount={discount} setDiscount={setDiscount} />
             </div>
 
@@ -86,6 +86,7 @@ export default function BookingPage() {
                 checkOut={checkOut}
                 guests={guests}
                 discount={discount}
+                isLoading={isLoading}
               />
             </div>
           </div>

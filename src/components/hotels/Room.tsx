@@ -1,4 +1,4 @@
-import { useGetRoomsByHotelIdQuery } from "@/store/api/roomApi";
+import { useGetAvailableHotelRoomsQuery, useGetRoomsByHotelIdQuery } from "@/store/api/roomApi";
 import SearchResultCard from "./searchResult/SearchResult";
 
 interface Room {
@@ -10,14 +10,28 @@ interface Room {
   bedType: string;
   maxOccupancy: number;
   status: string;
+  isActive: boolean;
   images: {
     imageUrl: string;
   }[];
 }
 
-export default function Rooms({ hotelId }: { hotelId: number }) {
-  const { data } = useGetRoomsByHotelIdQuery(Number(hotelId));
-  const hotelRooms = data?.data ?? [];
+export default function Rooms({ hotelId, search }: { hotelId: number; search: any }) {
+  const { data: allRooms } = useGetRoomsByHotelIdQuery(Number(hotelId));
+  const { data: availableRooms } = useGetAvailableHotelRoomsQuery(
+    {
+      hotelId,
+      checkInDate: search?.checkIn,
+      checkOutDate: search?.checkOut,
+      guests: search?.guests,
+    },
+    {
+      skip: !search,
+    },
+  );
+  const availableRoom = search
+    ? (availableRooms?.data ?? [])
+    : (allRooms?.data.filter((room: Room) => room.isActive) ?? []);
   return (
     <section className="space-y-6">
       <div>
@@ -28,7 +42,7 @@ export default function Rooms({ hotelId }: { hotelId: number }) {
 
       {/* Rooms */}
       <div className="space-y-6 grid">
-        {hotelRooms.map((room: Room) => (
+        {availableRoom.map((room: Room) => (
           <SearchResultCard key={room.id} result={room} />
         ))}
       </div>

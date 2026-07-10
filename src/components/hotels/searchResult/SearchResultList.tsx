@@ -14,9 +14,6 @@ interface SearchResultListProps {
 export default function SearchResultList({
   results,
   isLoading,
-  totalPages,
-  currentPage,
-  onPageChange,
   onReset,
 }: SearchResultListProps) {
   if (isLoading) {
@@ -29,13 +26,11 @@ export default function SearchResultList({
     );
   }
 
-  // if (results.length === 0) {
-  //   return <SearchEmpty onReset={onReset} />;
-  // }
-
-  console.log(results);
+  if (results.length === 0) {
+    return <SearchEmpty onReset={onReset ?? (() => {})} />;
+  }
   return (
-    <div className="space-y-6">
+    <div className=" grid space-y-6">
       {results.map((result) => (
         <SearchResultCard key={result.id} result={result} />
         // <SearchResultCard key={`${result.id}-${result.room.id}`} result={result} />

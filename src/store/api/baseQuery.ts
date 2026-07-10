@@ -5,7 +5,7 @@ import type { RootState } from "../store";
 export const baseQuery = fetchBaseQuery({
   baseUrl: `${API_ROOT}`,
   prepareHeaders: (headers, { getState }) => {
-    const token = (getState() as RootState).auth.user?.token;
+    const token = (getState() as RootState).auth.user?.accessToken;
 
     headers.set("Accept", "application/json");
     headers.set("ngrok-skip-browser-warning", "true");

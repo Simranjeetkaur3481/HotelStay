@@ -1,7 +1,5 @@
 // components/layout/Navbar/nav-links.ts
 
-import { href } from "react-router-dom";
-
 export interface NavLinkItem {
   label: string;
   href: string;
@@ -13,20 +11,12 @@ export const navLinks: NavLinkItem[] = [
     href: "/hotels",
   },
   {
-    label: "Destinations",
-    href: "/destinations",
+    label: "Find Rooms",
+    href: "/searchRooms",
   },
   {
-    label: "Deals",
-    href: "/deals",
-  },
-  {
-    label: "About",
-    href: "/about",
-  },
-  {
-    label: "Contact",
-    href: "/contact",
+    label: "Offers",
+    href: "#offers",
   },
 ];
 

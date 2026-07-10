@@ -10,15 +10,12 @@ import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { useLoginMutation } from "@/store/api/authApi";
 import { getDashboardPathForRole, normalizeUser } from "@/constants/roles";
-import { useAppDispatch } from "@/store/hooks";
 import { setUser } from "@/store/slices/authSlice";
 import { useDispatch } from "react-redux";
+import toast from "react-hot-toast";
 
 const schema = z.object({
-  emailOrUsername: z
-    .string()
-    .trim()
-    .min(1, "Please enter your email or username"),
+  emailOrUsername: z.string().trim().min(1, "Please enter your email or username"),
   password: z.string().min(8, "Password must be at least 8 characters"),
 });
 
@@ -30,11 +27,10 @@ const LoginForm = () => {
   const [login] = useLoginMutation();
   const navigate = useNavigate();
   const { state } = useLocation();
-  console.log(state);
   const {
     register,
     handleSubmit,
-    
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<LoginType>({
     defaultValues: {
@@ -54,7 +50,6 @@ const LoginForm = () => {
         throw new Error(res?.message || "Invalid credentials");
       }
       const user = normalizeUser(res.data);
-      console.log(user);
       dispatch(setUser(user));
       if (redirectTo) {
         navigate(redirectTo, { state: bookingData, replace: true });
@@ -62,150 +57,106 @@ const LoginForm = () => {
         navigate(getDashboardPathForRole(user.role), { replace: true });
       }
     } catch (error: any) {
-      console.log(error?.data?.message || "something went wrong");
+      toast.error(error?.data?.message || "Something went wrong");
     }
     reset();
   };
   return (
+    <div className="w-full max-w-md mx-auto">
+      <div className="mb-8">
+        <h1 className="text-4xl font-extrabold text-[#00355f] mt-10">SmartStay</h1>
 
-  <div className="w-full max-w-md mx-auto">
-    <div className="mb-8">
-      <h1 className="text-4xl font-extrabold text-[#00355f] mt-10">
-        SmartStay
-      </h1>
+        <h2 className="mt-8 text-3xl font-bold text-gray-900">Welcome Back 👋</h2>
 
-      <h2 className="mt-8 text-3xl font-bold text-gray-900">
-        Welcome Back 👋
-      </h2>
-
-      <p className="mt-3 text-gray-500 leading-7">
-        Sign in to continue managing your bookings and discover your next stay.
-      </p>
-    </div>
-
-    <form
-      onSubmit={handleSubmit(formSubmit)}
-      className="space-y-6"
-    >
-      {/* Email */}
-      <div>
-        <label className="block mb-2 text-sm font-semibold text-gray-700">
-          Email or Username
-        </label>
-
-        <Input
-          {...register("emailOrUsername")}
-          placeholder="Enter your email or username"
-          className="h-12 rounded-xl border-gray-300 focus:ring-2 focus:ring-[#00355f]"
-        />
-
-        {errors.emailOrUsername && (
-          <p className="mt-2 text-sm text-red-500">
-            {errors.emailOrUsername.message}
-          </p>
-        )}
+        <p className="mt-3 text-gray-500 leading-7">
+          Sign in to continue managing your bookings and discover your next stay.
+        </p>
       </div>
 
-      {/* Password */}
-      <div>
-        <div className="flex items-center justify-between mb-2">
-          <label className="text-sm font-semibold text-gray-700">
-            Password
-          </label>
+      <form onSubmit={handleSubmit(formSubmit)} className="space-y-6">
+        {/* Email */}
+        <div>
+          <label className="block mb-2 text-sm font-semibold text-gray-700">Email or Username</label>
 
-          <Link
-            to="/forgotPassword"
-            className="text-sm font-medium text-[#00355f] hover:underline"
-          >
-            Forgot Password?
-          </Link>
-        </div>
-
-        <div className="relative">
           <Input
-            {...register("password")}
-            type={showPassword ? "text" : "password"}
-            placeholder="Enter your password"
-            className="h-12 rounded-xl border-gray-300 pr-12 focus:ring-2 focus:ring-[#00355f]"
+            {...register("emailOrUsername")}
+            placeholder="Enter your email or username"
+            className="h-12 rounded-xl border-gray-300 focus:ring-2 focus:ring-[#00355f]"
           />
 
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#00355f]"
-          >
-            {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-          </button>
+          {errors.emailOrUsername && <p className="mt-2 text-sm text-red-500">{errors.emailOrUsername.message}</p>}
         </div>
 
-        {errors.password && (
-          <p className="mt-2 text-sm text-red-500">
-            {errors.password.message}
-          </p>
-        )}
-      </div>
+        {/* Password */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-semibold text-gray-700">Password</label>
 
-      {/* Login Button */}
-      <Button
-        type="submit"
-        disabled={isSubmitting}
-        className="w-full h-12 rounded-xl bg-[#00355f] hover:bg-[#01487e] text-white text-base font-semibold shadow-lg transition-all duration-300"
-      >
-        {isSubmitting ? "Signing In..." : "Sign In"}
-      </Button>
+            <Link to="/forgotPassword" className="text-sm font-medium text-[#00355f] hover:underline">
+              Forgot Password?
+            </Link>
+          </div>
 
-      {/* Divider */}
-      <div className="flex items-center">
-        <div className="flex-1 border-t border-gray-300"></div>
-        <span className="px-4 text-sm text-gray-500">
-          Or continue with
-        </span>
-        <div className="flex-1 border-t border-gray-300"></div>
-      </div>
+          <div className="relative">
+            <Input
+              {...register("password")}
+              type={showPassword ? "text" : "password"}
+              placeholder="Enter your password"
+              className="h-12 rounded-xl border-gray-300 pr-12 focus:ring-2 focus:ring-[#00355f]"
+            />
 
-      {/* Social Login */}
-      <div className="grid grid-cols-3 gap-4">
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#00355f]"
+            >
+              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+            </button>
+          </div>
+
+          {errors.password && <p className="mt-2 text-sm text-red-500">{errors.password.message}</p>}
+        </div>
+
+        {/* Login Button */}
         <Button
-          type="button"
-          variant="outline"
-          className="h-12 rounded-xl hover:shadow-md transition"
+          type="submit"
+          disabled={isSubmitting}
+          className="w-full h-12 rounded-xl bg-[#00355f] hover:bg-[#01487e] text-white text-base font-semibold shadow-lg transition-all duration-300"
         >
-          <FcGoogle size={22} />
+          {isSubmitting ? "Signing In..." : "Sign In"}
         </Button>
 
-        <Button
-          type="button"
-          variant="outline"
-          className="h-12 rounded-xl hover:shadow-md transition"
-        >
-          <FaApple size={22} />
-        </Button>
+        {/* Divider */}
+        <div className="flex items-center">
+          <div className="flex-1 border-t border-gray-300"></div>
+          <span className="px-4 text-sm text-gray-500">Or continue with</span>
+          <div className="flex-1 border-t border-gray-300"></div>
+        </div>
 
-        <Button
-          type="button"
-          variant="outline"
-          className="h-12 rounded-xl hover:shadow-md transition"
-        >
-          <FaFacebookF
-            size={18}
-            className="text-blue-600"
-          />
-        </Button>
-      </div>
+        {/* Social Login */}
+        <div className="grid grid-cols-3 gap-4">
+          <Button type="button" variant="outline" className="h-12 rounded-xl hover:shadow-md transition">
+            <FcGoogle size={22} />
+          </Button>
 
-      {/* Register */}
-      <p className="text-center text-gray-600">
-        Don't have an account?{" "}
-        <Link
-          to="/register"
-          className="font-semibold text-[#00355f] hover:underline"
-        >
-          Create Account
-        </Link>
-      </p>
-    </form>
-  </div>
+          <Button type="button" variant="outline" className="h-12 rounded-xl hover:shadow-md transition">
+            <FaApple size={22} />
+          </Button>
 
+          <Button type="button" variant="outline" className="h-12 rounded-xl hover:shadow-md transition">
+            <FaFacebookF size={18} className="text-blue-600" />
+          </Button>
+        </div>
+
+        {/* Register */}
+        <p className="text-center text-gray-600">
+          Don't have an account?{" "}
+          <Link to="/register" className="font-semibold text-[#00355f] hover:underline">
+            Create Account
+          </Link>
+        </p>
+      </form>
+    </div>
   );
 };
 

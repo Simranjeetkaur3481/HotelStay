@@ -46,9 +46,10 @@ export const notificationApi = baseApi.injectEndpoints({
 });
 
 export const {
+  useGetNotificationsQuery,
+  useLazyGetNotificationsQuery,
   useGetNotificationCountQuery,
   useReadNotificationMutation,
   useReadAllNotificationMutation,
-  useLazyGetNotificationsQuery,
   useDeleteNotificationMutation,
 } = notificationApi;

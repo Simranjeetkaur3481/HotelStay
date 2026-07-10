@@ -7,7 +7,7 @@ type RoomBreadcrumbProps = {
   roomName: string;
 };
 
-export default function RoomBreadcrumb({ hotelId=1, hotelName="Pp", roomName="tt" }: RoomBreadcrumbProps) {
+export default function RoomBreadcrumb({ hotelId, hotelName, roomName }: RoomBreadcrumbProps) {
   return (
     <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
       <Link to="/" className="flex items-center gap-1 hover:text-primary">

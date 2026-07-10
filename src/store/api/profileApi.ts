@@ -1,3 +1,4 @@
+import { API_BASE_URL } from "@/constants/api";
 import { baseApi } from "./baseApi";
 import { endPoint } from "./endPoints/endPoints";
 

@@ -1,14 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
-import { BedDouble, Coffee, ShieldCheck, Users, Wifi } from "lucide-react";
+import { BedDouble, Users } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { API_BASE_URL } from "@/constants/api";
+import { getEffectiveRoomPricing } from "@/lib/roomPricing";
 
 export default function SearchResultCard({ result }: any) {
-  console.log(result);
-  const { hotelId, hotelName, images, id, name, description, bedType, maxOccupancy, pricePerNight } = result;
+  const { hotelId, hotelName, images, id, name, description, bedType, maxOccupancy } = result;
   const navigate = useNavigate();
+  const pricing = getEffectiveRoomPricing(result);
   return (
     <Link to={`/roomDetails/${id}`}>
       <article className="overflow-hidden rounded-2xl border bg-background transition-all hover:border-primary/20 hover:shadow-md">
@@ -55,30 +56,18 @@ export default function SearchResultCard({ result }: any) {
                   <Users className="h-4 w-4" />
                   {maxOccupancy} Guests
                 </div>
-
-                <div className="flex items-center gap-1.5">
-                  <Wifi className="h-4 w-4" />
-                  WiFi
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  <Coffee className="h-4 w-4" />
-                  Breakfast
-                </div>
-
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="h-4 w-4" />
-                  Free Cancellation
-                </div>
               </div>
             </div>
 
             {/* Footer */}
             <div className="mt-5 flex flex-col gap-4 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
               <div>
-                <p className="text-2xl font-bold text-primary">₹{pricePerNight.toLocaleString()}</p>
-
+                {pricing.hasDiscount && (
+                  <p className="text-sm text-muted-foreground line-through">₹{pricing.basePrice.toLocaleString()}</p>
+                )}
+                <p className="text-2xl font-bold text-primary">₹{pricing.effectivePrice.toLocaleString()}</p>
                 <p className="text-xs text-muted-foreground">per night • Taxes extra</p>
+                {pricing.promotionLabel && <p className="mt-1 text-xs font-medium text-emerald-600">{pricing.promotionLabel}</p>}
               </div>
 
               <div className="flex gap-2">

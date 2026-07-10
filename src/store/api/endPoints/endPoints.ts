@@ -53,6 +53,7 @@ export const endPoint = {
   bookings: {
     createBooking: `/booking`,
     getBookings: "/booking/my",
+    bookingById:(id:number)=>`/booking/${id}`
   },
 
   wishList: {

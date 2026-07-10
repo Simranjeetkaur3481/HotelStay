@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useNavigate } from "react-router-dom";
 import { FiArrowLeft, FiArrowRight, FiMail } from "react-icons/fi";
 import { useForgotPasswordMutation } from "@/store/api/authApi";
+import toast from "react-hot-toast";
 
 const schema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -26,46 +27,42 @@ const ForgotPasswordForm = () => {
   const [forgotPassword] = useForgotPasswordMutation();
   const onSubmit = async (data: FormValues) => {
     try {
-      const res = await forgotPassword(data).unwrap();
-      console.log(res);
-      alert("Password reset link sent successfully on your e-mail.");
+      await forgotPassword(data).unwrap();
+      toast.success("Password reset link sent to your email.");
 
       navigate("/login", {
         state: {
           email: data.email,
         },
       });
-    } catch (error) {
-      console.log(error);
-      alert("Something went wrong");
+    } catch {
+      toast.error("Something went wrong");
     }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-slate-200 flex items-center justify-center p-6">
-      <div className="w-full max-w-6xl overflow-hidden rounded-[32px] bg-white shadow-2xl ">
-        <div className="flex items-center justify-center p-8 md:p-15">
-          <div className="w-full max-w-md ">
-            <h1 className="text-4xl font-extrabold ml-25  text-[#00355f]">
-              SmartStay
-            </h1>
+    <div className="w-full max-w-md">
+      <div className="rounded-2xl border bg-background p-6 shadow-sm sm:p-8">
+        <h1 className="text-3xl font-extrabold text-[#00355f]">
+          SmartStay
+        </h1>
 
-            <div className="mt-10">
-              <h2 className="text-3xl font-bold text-gray-900">
-                Forgot Password?
-              </h2>
+        <div className="mt-8">
+          <h2 className="text-3xl font-bold text-gray-900">
+            Forgot Password?
+          </h2>
 
               <p className="mt-4 text-gray-500 leading-7">
                 Enter your registered email address and we'll send you a secure
                 link to reset your password.
               </p>
-            </div>
+        </div>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="mt-10 space-y-6">
-              <div>
-                <label className="mb-2 block text-sm font-semibold text-gray-700">
-                  Email Address
-                </label>
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
+          <div>
+            <label className="mb-2 block text-sm font-semibold text-gray-700">
+              Email Address
+            </label>
 
                 <div className="relative">
                   <FiMail
@@ -86,7 +83,7 @@ const ForgotPasswordForm = () => {
                     {errors.email.message}
                   </p>
                 )}
-              </div>
+          </div>
 
               <button
                 type="submit"
@@ -102,27 +99,25 @@ const ForgotPasswordForm = () => {
                   </>
                 )}
               </button>
-            </form>
+        </form>
 
-            <div className="my-8 flex items-center gap-4">
-              <div className="h-px flex-1 bg-gray-300"></div>
+        <div className="my-8 flex items-center gap-4">
+          <div className="h-px flex-1 bg-gray-300"></div>
 
               <span className="text-sm text-gray-500">
                 Remember your password?
               </span>
 
               <div className="h-px flex-1 bg-gray-300"></div>
-            </div>
-
-            <Link
-              to="/login"
-              className="flex h-12 items-center justify-center gap-2 rounded-xl border border-gray-300 text-[#00355f] font-medium transition hover:bg-gray-50"
-            >
-              <FiArrowLeft />
-              Back to Sign In
-            </Link>
-          </div>
         </div>
+
+        <Link
+          to="/login"
+          className="flex h-12 items-center justify-center gap-2 rounded-xl border border-gray-300 text-[#00355f] font-medium transition hover:bg-gray-50"
+        >
+          <FiArrowLeft />
+          Back to Sign In
+        </Link>
       </div>
     </div>
   );

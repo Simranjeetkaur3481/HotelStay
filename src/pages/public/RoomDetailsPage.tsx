@@ -10,19 +10,18 @@ import { useParams } from "react-router-dom";
 
 export default function RoomDetailsPage() {
   const { id } = useParams();
-  const { data } = useGetRoomDetailQuery(id);
+  const roomId = Number(id);
+  const { data } = useGetRoomDetailQuery(roomId);
   const room = data?.data || {};
   const { data: hotels } = useGetHotelDetailQuery(room.hotelId);
   const hotel = hotels?.data || {};
-  const { data: rooms } = useGetRoomsByHotelIdQuery(hotel.id);
+  const { data: rooms } = useGetRoomsByHotelIdQuery(hotel.id, { skip: !hotel.id });
   const allRooms = rooms?.data || [];
-  const similarRooms = allRooms.filter((r) => r.id !== room.id);
-  console.log(similarRooms, "rrrr");
+  const similarRooms = allRooms.filter((r: { id: number }) => r.id !== room.id);
 
-  
   return (
     <div className="container mx-auto px-4 py-8">
-      <RoomBreadcrumb />
+      <RoomBreadcrumb hotelId={hotel?.id} hotelName={hotel?.name} roomName={room?.name} />
 
       <RoomGallery images={room.images} />
 
@@ -39,7 +38,7 @@ export default function RoomDetailsPage() {
 
         <aside className="lg:col-span-4">
           <div className="sticky top-24">
-            <BookingCard room={room} />
+            <BookingCard room={room} hotelId={hotel?.id} />
           </div>
         </aside>
       </div>

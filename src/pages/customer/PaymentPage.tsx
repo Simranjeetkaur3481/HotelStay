@@ -1,91 +1,41 @@
-import {
-  CreditCard,
-  Wallet,
-  Landmark,
-} from "lucide-react";
+import { useState } from "react";
+import { useParams } from "react-router-dom";
+import { ShieldCheck, Lock } from "lucide-react";
+import PaymentMethodCard from "./PaymentMethod";
+import BookingPaymentSummary from "./PaymentSummary";
+import { Badge } from "@/components/ui/badge";
 
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+export type PaymentProvider = "Razorpay" | "Stripe";
 
-import { Button } from "@/components/ui/button";
+export default function PaymentScreen() {
+  const { id } = useParams();
+  const [provider, setProvider] = useState<PaymentProvider>("Razorpay");
 
-export default function PaymentPage() {
   return (
-    <section className="container py-10">
-
-      <h1 className="mb-8 text-3xl font-bold">
-        Payment
-      </h1>
-
-      <div className="grid gap-8 lg:grid-cols-12">
-
-        {/* Left */}
-
-        <div className="space-y-5 lg:col-span-8">
-
-          <Card>
-
-            <CardHeader>
-
-              <CardTitle>
-                Select Payment Method
-              </CardTitle>
-
-            </CardHeader>
-
-            <CardContent className="space-y-4">
-
-              <button className="flex w-full items-center gap-4 rounded-lg border p-4 transition hover:border-primary">
-
-                <CreditCard />
-
-                Credit / Debit Card
-
-              </button>
-
-              <button className="flex w-full items-center gap-4 rounded-lg border p-4 transition hover:border-primary">
-
-                <Wallet />
-
-                UPI
-
-              </button>
-
-              <button className="flex w-full items-center gap-4 rounded-lg border p-4 transition hover:border-primary">
-
-                <Landmark />
-
-                Net Banking
-
-              </button>
-
-            </CardContent>
-
-          </Card>
-
+    <div className="min-h-screen bg-gradient-to-b from-muted/30 via-background to-background">
+      <section className="container mx-auto max-w-7xl px-6 py-10">
+        <div className="mb-10">
+          <Badge variant="outline" className="mb-4 rounded-full border-primary/20 bg-primary/5 px-4 py-1.5 text-primary">
+            <Lock className="mr-1.5 size-3.5" />
+            Secure Checkout
+          </Badge>
+          <h1 className="text-3xl font-bold tracking-tight lg:text-4xl">Complete Your Payment</h1>
+          <p className="mt-2 text-muted-foreground">
+            Your booking is reserved. Complete payment to confirm your stay.
+          </p>
+          <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+            <ShieldCheck className="size-4 text-emerald-600" />
+            256-bit SSL encrypted · PCI DSS compliant
+          </div>
         </div>
 
-        {/* Right */}
-
-        <div className="lg:col-span-4">
-
-          Booking Summary
-
+        <div className="grid gap-8 lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            <PaymentMethodCard provider={provider} onChange={setProvider} />
+          </div>
+          <BookingPaymentSummary bookingId={Number(id)} provider={provider} />
         </div>
-
-      </div>
-
-      <Button
-        className="mt-8 w-full"
-        size="lg"
-      >
-        Pay Now
-      </Button>
-
-    </section>
+      </section>
+    </div>
   );
 }
